@@ -1,0 +1,687 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Android,">
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="IT痴者" type="application/atom+xml">
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.0.1">
+
+
+
+
+<meta name="description" content="解析android底层发短信相关源码，包括短信的发送，以及RIL层返回结果的处理。如有错误请更正。本文从SMSDispatcher开始分析，不包括上层代码分析。">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Android发短信底层源码（android5.1）解析》---主要解析SMSDispatcher发短信部分源码">
+<meta property="og:url" content="http://www.wxfjava.com/2017/03/20/2017/android_smsdispatcher/index.html">
+<meta property="og:site_name" content="IT痴者">
+<meta property="og:description" content="解析android底层发短信相关源码，包括短信的发送，以及RIL层返回结果的处理。如有错误请更正。本文从SMSDispatcher开始分析，不包括上层代码分析。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-05-09T17:11:02.390Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《Android发短信底层源码（android5.1）解析》---主要解析SMSDispatcher发短信部分源码">
+<meta name="twitter:description" content="解析android底层发短信相关源码，包括短信的发送，以及RIL层返回结果的处理。如有错误请更正。本文从SMSDispatcher开始分析，不包括上层代码分析。">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 11338612,
+      author: 'IT痴者'
+    }
+  };
+</script>
+
+
+  <link rel="canonical" href="http://www.wxfjava.com/2017/03/20/2017/android_smsdispatcher/">
+
+  <title> 《Android发短信底层源码（android5.1）解析》---主要解析SMSDispatcher发短信部分源码 | IT痴者 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+
+<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?bf7b452e46b0fc9d7246b940e2641f50";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">IT痴者</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">前进是我活着的唯一理由</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                《Android发短信底层源码（android5.1）解析》---主要解析SMSDispatcher发短信部分源码
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-03-20T18:20:00+08:00" content="2017-03-20">
+              2017-03-20
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/03/20/2017/android_smsdispatcher/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/20/2017/android_smsdispatcher/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>阅读
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>解析android底层发短信相关源码，包括短信的发送，以及RIL层返回结果的处理。<strong>如有错误请更正</strong>。本文从SMSDispatcher开始分析，不包括上层代码分析。</p>
+<a id="more"></a>
+<h2 id="SMSDispatcher相关说明"><a href="#SMSDispatcher相关说明" class="headerlink" title="SMSDispatcher相关说明"></a>SMSDispatcher相关说明</h2><p> SMSDispatcher的子类主要有GsmSMSDispatcher与CdmaSMSDispatcher。ImsSMSDispatcher相当于是对上面两个子类的一个包装，上层调用时主要调用ImsSMSDispatcher中的方法。ImsSMSDispatcher中再去选择调用的是Gsm还是Cdma中的方法。</p>
+<h2 id="GsmSMSDispatcher发短信解析（主要针对文本短信）"><a href="#GsmSMSDispatcher发短信解析（主要针对文本短信）" class="headerlink" title="GsmSMSDispatcher发短信解析（主要针对文本短信）"></a>GsmSMSDispatcher发短信解析（主要针对文本短信）</h2><p> GsmSMSDispatcher.sendSms开始短信的发送。真正发送通过调用sendSmsByPstn</p>
+<p> <strong><em>关键代码</em></strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (tracker.mRetryCount == <span class="number">0</span> &amp;&amp; tracker.mExpectMore) &#123;</span><br><span class="line">	<span class="comment">// 发送失败时，原因同时有多条短信在发送则调用该方法</span></span><br><span class="line">	<span class="comment">// EVENT_SEND_LIMIT_REACHED_CONFIRMATION</span></span><br><span class="line">    mCi.sendSMSExpectMore(IccUtils.bytesToHexString(smsc),</span><br><span class="line">            IccUtils.bytesToHexString(pdu), reply);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	<span class="comment">// 正常发送</span></span><br><span class="line">    mCi.sendSMS(IccUtils.bytesToHexString(smsc),</span><br><span class="line">            IccUtils.bytesToHexString(pdu), reply);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="发送成功解析"><a href="#发送成功解析" class="headerlink" title="发送成功解析"></a>发送成功解析</h2><p>主要发送成功，失败（多条短信等）<br>发送成功时会发送上面的reply消息。<br>关键代码在handleMessage中。成功后会调用对应的SentIntent中的send方法</p>
+<p> <strong><em>关键代码</em></strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (mSentIntent != <span class="keyword">null</span>) &#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">	    <span class="comment">// Extra information to send with the sent intent</span></span><br><span class="line">	    Intent fillIn = <span class="keyword">new</span> Intent();</span><br><span class="line">	    <span class="keyword">if</span> (mMessageUri != <span class="keyword">null</span>) &#123;</span><br><span class="line">	        <span class="comment">// Pass this to SMS apps so that they know where it is stored</span></span><br><span class="line">	        fillIn.putExtra(<span class="string">"uri"</span>, mMessageUri.toString());</span><br><span class="line">	    &#125;</span><br><span class="line">	    <span class="keyword">if</span> (mUnsentPartCount != <span class="keyword">null</span> &amp;&amp; isSinglePartOrLastPart) &#123;</span><br><span class="line">	        <span class="comment">// Is multipart and last part</span></span><br><span class="line">	        fillIn.putExtra(SEND_NEXT_MSG_EXTRA, <span class="keyword">true</span>);</span><br><span class="line">	    &#125;</span><br><span class="line">	    <span class="comment">// 发送成功报告</span></span><br><span class="line">	    mSentIntent.send(context, Activity.RESULT_OK, fillIn);</span><br><span class="line">	&#125; <span class="keyword">catch</span> (CanceledException ex) &#123;</span><br><span class="line">	    Rlog.e(TAG, <span class="string">"Failed to send result"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>关于送达报告的执行，要在SMSDispatcher创建的时候在CommandsInterface中进行注册。告诉底层RIL送到后发送的消息。</p>
+<p> <strong><em>关键代码</em></strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">public</span> <span class="title">GsmSMSDispatcher</span><span class="params">(PhoneBase phone, SmsUsageMonitor usageMonitor,</span></span></span><br><span class="line"><span class="function"><span class="params">        ImsSMSDispatcher imsSMSDispatcher,</span></span></span><br><span class="line"><span class="function"><span class="params">        GsmInboundSmsHandler gsmInboundSmsHandler)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>(phone, usageMonitor, imsSMSDispatcher);</span><br><span class="line">    <span class="comment">// 注册送达报告消息</span></span><br><span class="line">    mCi.setOnSmsStatus(<span class="keyword">this</span>, EVENT_NEW_SMS_STATUS_REPORT, <span class="keyword">null</span>);</span><br><span class="line">    mGsmInboundSmsHandler = gsmInboundSmsHandler;</span><br><span class="line">    mUiccController = UiccController.getInstance();</span><br><span class="line">    mUiccController.registerForIccChanged(<span class="keyword">this</span>, EVENT_ICC_CHANGED, <span class="keyword">null</span>);</span><br><span class="line">    Rlog.d(TAG, <span class="string">"GsmSMSDispatcher created"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 送达报告执行部分</span></span><br><span class="line">PendingIntent intent = tracker.mDeliveryIntent;</span><br><span class="line">Intent fillIn = <span class="keyword">new</span> Intent();</span><br><span class="line">fillIn.putExtra(<span class="string">"pdu"</span>, IccUtils.hexStringToBytes(pduString));</span><br><span class="line">fillIn.putExtra(<span class="string">"format"</span>, getFormat());</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    intent.send(mContext, Activity.RESULT_OK, fillIn);</span><br><span class="line">&#125; <span class="keyword">catch</span> (CanceledException ex) &#123;&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="发送失败解析"><a href="#发送失败解析" class="headerlink" title="发送失败解析"></a>发送失败解析</h2><p>如果发送失败主要还是进行重试，重试MAX_SEND_RETRIES次。重试的时候会有时间延时SEND_RETRY_DELAY</p>
+<p> <strong><em>关键代码</em></strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!isIms() &amp;&amp; ss != ServiceState.STATE_IN_SERVICE) &#123;</span><br><span class="line">    tracker.onFailed(mContext, getNotInServiceError(ss), <span class="number">0</span><span class="comment">/*errorCode*/</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> ((((CommandException)(ar.exception)).getCommandError()</span><br><span class="line">        == CommandException.Error.SMS_FAIL_RETRY) &amp;&amp;</span><br><span class="line">       tracker.mRetryCount &lt; MAX_SEND_RETRIES) &#123;</span><br><span class="line">    tracker.mRetryCount++;</span><br><span class="line">    Message retryMsg = obtainMessage(EVENT_SEND_RETRY, tracker);</span><br><span class="line">    <span class="comment">// 发送重试消息，进行重试</span></span><br><span class="line">    sendMessageDelayed(retryMsg, SEND_RETRY_DELAY);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 这部分代码不知道是不是判断电话是不是在使用，有待验证</span></span><br><span class="line"><span class="keyword">int</span> ss = mPhone.getServiceState().getState();</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ( tracker.mImsRetry &gt; <span class="number">0</span> &amp;&amp; ss != ServiceState.STATE_IN_SERVICE) &#123;</span><br><span class="line">    <span class="comment">// This is retry after failure over IMS but voice is not available.</span></span><br><span class="line">    <span class="comment">// Set retry to max allowed, so no retry is sent and</span></span><br><span class="line">    <span class="comment">//   cause RESULT_ERROR_GENERIC_FAILURE to be returned to app.</span></span><br><span class="line">    tracker.mRetryCount = MAX_SEND_RETRIES;</span><br><span class="line"></span><br><span class="line">    Rlog.d(TAG, <span class="string">"handleSendComplete: Skipping retry: "</span></span><br><span class="line">    +<span class="string">" isIms()="</span>+isIms()</span><br><span class="line">    +<span class="string">" mRetryCount="</span>+tracker.mRetryCount</span><br><span class="line">    +<span class="string">" mImsRetry="</span>+tracker.mImsRetry</span><br><span class="line">    +<span class="string">" mMessageRef="</span>+tracker.mMessageRef</span><br><span class="line">    +<span class="string">" SS= "</span>+mPhone.getServiceState().getState());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>要想知道失败原因还得细读失败时候的处理。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag">#Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/26/2017/git-flow/" rel="next" title="Git Flow 安装使用简述">
+                <i class="fa fa-chevron-left"></i> Git Flow 安装使用简述
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/03/29/2017/maven-test-cmd/" rel="prev" title="《Maven中运行指定的测试类或方法》---主要用命令运行">
+                《Maven中运行指定的测试类或方法》---主要用命令运行 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+  <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTMyNi81ODk0">
+        <script type="text/javascript">
+         (function(d, s) {
+             var j, e = d.getElementsByTagName(s)[0];
+
+             if (typeof LivereTower === 'function') { return; }
+
+             j = d.createElement(s);
+             j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+             j.async = true;
+
+             e.parentNode.insertBefore(j, e);
+         })(document, 'script');
+        </script>
+      <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+      </div>
+    
+      <div class="ds-thread" data-thread-key="2017/03/20/2017/android_smsdispatcher/" data-title="《Android发短信底层源码（android5.1）解析》---主要解析SMSDispatcher发短信部分源码" data-url="http://www.wxfjava.com/2017/03/20/2017/android_smsdispatcher/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/head.png" alt="IT痴者">
+          <p class="site-author-name" itemprop="name">IT痴者</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">37</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/w695050167" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  CSDN
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://blog.csdn.net/w695050167/article/details/52396838" target="_blank" title="关于痴者">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  关于痴者
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SMSDispatcher相关说明"><span class="nav-number">1.</span> <span class="nav-text">SMSDispatcher相关说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GsmSMSDispatcher发短信解析（主要针对文本短信）"><span class="nav-number">2.</span> <span class="nav-text">GsmSMSDispatcher发短信解析（主要针对文本短信）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发送成功解析"><span class="nav-number">3.</span> <span class="nav-text">发送成功解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发送失败解析"><span class="nav-number">4.</span> <span class="nav-text">发送失败解析</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">IT痴者</span>
+</div>
+
+<a class="theme-link" href="http://blog.csdn.net/w695050167">CSDN</a>
+<!--
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+-->
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span>访客</span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span>访问</span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"wxfjava"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

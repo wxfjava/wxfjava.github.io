@@ -1,0 +1,788 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Android,">
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="IT痴者" type="application/atom+xml">
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.0.1">
+
+
+
+
+<meta name="description" content="整理自网络文章 1.单例模式  简介：保证一个类仅有一个实例，并提供一个访问它的全局访问点。 示例：Android中的系统级服务都是通过容器的单例模式实现方式，以单例形式存在，减少了资源消耗。比如LayoutInflater Service，将这些服务以键值对的形式存储在一个HashMap容器中，用户使用时只需要根据key来获取到对应的ServiceFetcher，然后通过ServcieFetch">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Android----android中用到的设计模式》">
+<meta property="og:url" content="http://www.wxfjava.com/2018/07/10/2018/android-design-mode/index.html">
+<meta property="og:site_name" content="IT痴者">
+<meta property="og:description" content="整理自网络文章 1.单例模式  简介：保证一个类仅有一个实例，并提供一个访问它的全局访问点。 示例：Android中的系统级服务都是通过容器的单例模式实现方式，以单例形式存在，减少了资源消耗。比如LayoutInflater Service，将这些服务以键值对的形式存储在一个HashMap容器中，用户使用时只需要根据key来获取到对应的ServiceFetcher，然后通过ServcieFetch">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-05-09T17:11:02.420Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《Android----android中用到的设计模式》">
+<meta name="twitter:description" content="整理自网络文章 1.单例模式  简介：保证一个类仅有一个实例，并提供一个访问它的全局访问点。 示例：Android中的系统级服务都是通过容器的单例模式实现方式，以单例形式存在，减少了资源消耗。比如LayoutInflater Service，将这些服务以键值对的形式存储在一个HashMap容器中，用户使用时只需要根据key来获取到对应的ServiceFetcher，然后通过ServcieFetch">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 11338612,
+      author: 'IT痴者'
+    }
+  };
+</script>
+
+
+  <link rel="canonical" href="http://www.wxfjava.com/2018/07/10/2018/android-design-mode/">
+
+  <title> 《Android----android中用到的设计模式》 | IT痴者 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+
+<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?bf7b452e46b0fc9d7246b940e2641f50";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">IT痴者</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">前进是我活着的唯一理由</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                《Android----android中用到的设计模式》
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2018-07-10T18:14:00+08:00" content="2018-07-10">
+              2018-07-10
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2018/07/10/2018/android-design-mode/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/07/10/2018/android-design-mode/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>阅读
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><em>整理自网络文章</em></p>
+<p><strong>1.单例模式</strong></p>
+<ul>
+<li>简介：保证一个类仅有一个实例，并提供一个访问它的全局访问点。</li>
+<li>示例：Android中的系统级服务都是通过容器的单例模式实现方式，以单例形式存在，减少了资源消耗。<br>比如LayoutInflater Service，将这些服务以键值对的形式存储在一个HashMap容器中，用户使用时只需要根据key来获取到对应的ServiceFetcher，然后通过ServcieFetcher对象的getService函数来获取到具体的服务对象，第一次获取时会调用ServcieFetcher的createService函数创建服务对象，然后将该对象缓存到一个列表中，下次再取时直接从缓存中获取，避免重复创建对象，从而达到单例的效果。</li>
+</ul>
+<a id="more"></a>
+<p><strong>2.抽象工厂模式</strong></p>
+<ul>
+<li>简介：提供一个创建一系列相关或相互依赖对象的接口，而无需指定它们具体的类。</li>
+<li>示例：Android底层对MediaPlayer的创建。<br>MediaPlayerFactory是Android底层为了创建不同的MediaPlayer所定义的一个类。</li>
+</ul>
+<p><strong>3.工厂模式</strong></p>
+<ul>
+<li>简介：定义一个用于创建对象的接口，让子类决定将哪一个类实例化。</li>
+<li>示例：BitmapFactory位图工厂，专门用来将指定的图片转换为指定的位图Bitmap。</li>
+</ul>
+<p><strong>4.原型模式</strong></p>
+<ul>
+<li>简介：用原型实例指定创建对象的种类，并且通过拷贝这个原型来创建新的对象。</li>
+<li>示例：比如我们需要一张Bitmap的几种不同格式：ARGB_8888、RGB_565、ARGB_4444、ALAPHA_8等。那我们就可以先创建一个ARGB_8888的Bitmap作为原型，在它的基础上，通过调用Bitmap.copy(Config)来创建出其它几种格式的Bitmap。另外一个例子就是Java中所有对象都有的一个名字叫clone的方法，已经原型模式的代名词了。在系统中要创建大量的对象，这些对象之间具有几乎完全相同的功能，只是在细节上有一点儿差别。</li>
+</ul>
+<p><strong>5.建造者模式</strong></p>
+<ul>
+<li>简介：将一个复杂对象的构建与它的表示分离，使得同样的构建过程可以创建不同的表示。</li>
+<li>示例：AlertDialog.Builder   ImageLoader的初始配置。</li>
+</ul>
+<p><strong>6.适配器模式</strong></p>
+<ul>
+<li>简介：将一个类的接口转换成客户希望的另外一个接口。</li>
+<li>示例：不同的数据提供者使用一个适配器来向一个相同的客户提供服务。<br>ListView或GridView的Adapter。</li>
+</ul>
+<p><strong>7.桥接模式</strong></p>
+<ul>
+<li>简介：将抽象部分与它的实现部分分离，使它们都可以独立地变化。</li>
+<li>示例：Window和WindowManager之间的关系。<br>在FrameWork中Window和PhoneWindow构成窗口的抽象部分，其中Window类为该抽象部分的抽象接口，PhoneWindow为抽象部分具体的实现及扩展。而WindowManager则为实现部分的基类，WindowManagerImpl则为实现部分具体的逻辑实现。</li>
+</ul>
+<p><strong>8.装饰模式</strong></p>
+<ul>
+<li>简介：动态地给一个对象添加一些额外的职责。就扩展功能而言， 它比生成子类方式更为灵活。</li>
+<li>示例：Activity继承自ContextThemeWrapper，ContextThemeWrapper继承自ContextWrapper，ContextWrapper才是继承自Context。ContextWrapper就是我们找的装饰者。</li>
+</ul>
+<p><strong>9.组合模式</strong></p>
+<ul>
+<li>简介：将对象组合成树形结构以表示“部分-整体”的层次结构。</li>
+<li>示例：View和ViewGroup的组合</li>
+</ul>
+<p><strong>10.外观模式</strong></p>
+<ul>
+<li>简介：为子系统中的一组接口提供一个一致的界面，Facade模式定义了一个高层接口，统一编程接口。</li>
+<li>示例：ContextImpl</li>
+</ul>
+<p><strong>11.享元模式</strong></p>
+<ul>
+<li>简介：运用共享技术有效地支持大量细粒度的对象。</li>
+<li>示例：Message.obtainMessage通过重用Message对象来避免大量的Message对象被频繁的创建和销毁。</li>
+</ul>
+<p><strong>12.代理模式</strong></p>
+<ul>
+<li>简介：为其他对象提供一个代理以控制对这个对象的访问。</li>
+<li>示例：所有的AIDL都一个代理模式的例子。假设一个Activity A去绑定一个Service S，那么A调用S中的每一个方法其实都是通过系统的Binder机制的中转，然后调用S中的对应方法来做到的。Binder机制就起到了代理的作用。</li>
+</ul>
+<p><strong>13.观察者模式</strong></p>
+<ul>
+<li>简介：一个对象发生改变时，所有信赖于它的对象自动做相应改变。</li>
+<li>示例：我们可以通过BaseAdapter.registerDataSetObserver和BaseAdapter.unregisterDataSetObserver两方法来向BaseAdater注册、注销一个DataSetObserver。这个过程中，DataSetObserver就是一个观察者，它一旦发现BaseAdapter内部数据有变量，就会通过回调方法DataSetObserver.onChanged和DataSetObserver.onInvalidated来通知DataSetObserver的实现类。事件通知也是观察者模式。</li>
+</ul>
+<p><strong>14.中介者模式</strong></p>
+<ul>
+<li>简介：用一个中介对象来封装一系列的对象交互。中介者使各对象不需要显式地相互引用，从而使其耦合松散，而且可以独立地改变它们之间的交互。</li>
+<li>示例：Binder机制。</li>
+</ul>
+<p><strong>15.访问者模式</strong></p>
+<ul>
+<li>简介：表示一个作用于某对象结构中的各元素的操作。它使你可以在不改变各元素的类的前提下定义作用于这些元素的新操作。</li>
+<li>示例：编译时注解中的ElementVisitor中定义多个Visit接口，每个接口处理一种数据类型，这就是典型的访问者模式，访问者模式正好解决了数据结构和数据操作分离的问题，避免某些操作污染了数据对象类。</li>
+</ul>
+<p><strong>16.解释器模式</strong></p>
+<ul>
+<li>简介：给定一个语言，定义它的文法的一种表示，并定义一个解释器，这个解释器使用该表示来解释语言中的句子。</li>
+<li>示例：PackageParser这个类对AndroidManifest.xml这个配置文件的解析过程，</li>
+</ul>
+<p><strong>17.迭代器模式</strong></p>
+<ul>
+<li>简介：提供一种方法顺序访问一个聚合对象中各个元素, 而又不需暴露该对象的内部表示。</li>
+<li>示例：在Android中除了各种数据结构体，如List，Map，等包含的迭代器以外，Android源码中也提供了迭代器遍历模式，比如数据库查询使用Cursor，当我们使用SQLiteDataBase的query方法查询数据库时，会返回一个Cursor游标对象，该游标对象实际上就是一个具体的迭代器。</li>
+</ul>
+<p><strong>18.备忘录模式</strong></p>
+<ul>
+<li>简介：不需要了解对象的内部结构的情况下备份对象的状态，方便以后恢复。</li>
+<li>示例：Activity的onSaveInstanceState和onRestoreInstanceState就是通过Bundle这种序列化的数据结构来存储Activity的状态，至于其中存储的数据结构，这两个方法不用关心。</li>
+</ul>
+<p><strong>19.责任链模式</strong></p>
+<ul>
+<li>简介：有多个的对象可以处理一个请求，哪个对象处理该请求运行时刻自动确定。</li>
+<li>示例:  责任链模式在Android源码中比较类似的实现莫过于对事件的分发处理，每当用户接触屏幕时候，Android都会将对应的事件包装成一个事件对象从ViewTree的顶部至上而下的分发传递。ViewGroup事件投递的递归调用就类似一条责任链，一旦寻找到责任者，那么就由责任者持有并消费该次事件，具体的体现在View的onTouchEvent方法中的返回值，如果OnTouchEvent返回false，那么意味着当前View不会是该次事件的责任人，将不会对该事件持有。</li>
+</ul>
+<p><strong>20.状态模式</strong></p>
+<ul>
+<li>简介：状态发生改变时，行为改变。</li>
+<li>示例：View.onVisibilityChanged方法，就是提供了一个状态模式的实现，允许在View的visibility发生改变时，引发执行onVisibilityChanged方法中的动作。</li>
+</ul>
+<p><strong>21.策略模式</strong></p>
+<ul>
+<li>简介：定义了一系列封装了算法、行为的对象，他们可以相互替换。</li>
+<li>示例：Java.util.List就是定义了一个增（add）、删（remove）、改（set）、查（indexOf）策略，至于实现这个策略的ArrayList、LinkedList等类，只是在具体实现时采用了不同的算法。但因为它们策略一样，不考虑速度的情况下，使用时完全可以互相替换使用。</li>
+</ul>
+<p><strong>22.命令模式</strong></p>
+<ul>
+<li>简介：把请求封装成一个对象发送出去，方便定制、排队、取消。</li>
+<li>示例：Handler.post后Handler.handleMessage。</li>
+</ul>
+<p><strong>23.享元模式</strong></p>
+<ul>
+<li>简介：运用共享技术有效地支持大量细粒度的对象。</li>
+<li>示例：Message.obtainMessage通过重用Message对象来避免大量的Message对象被频繁的创建和销毁。</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag">#Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/26/2018/android-appt/" rel="next" title="《Android-用aapt获取package name和launch activity》">
+                <i class="fa fa-chevron-left"></i> 《Android-用aapt获取package name和launch activity》
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/2018/optimize-handler/" rel="prev" title="《Android---handler小小优化问题》">
+                《Android---handler小小优化问题》 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+  <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTMyNi81ODk0">
+        <script type="text/javascript">
+         (function(d, s) {
+             var j, e = d.getElementsByTagName(s)[0];
+
+             if (typeof LivereTower === 'function') { return; }
+
+             j = d.createElement(s);
+             j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+             j.async = true;
+
+             e.parentNode.insertBefore(j, e);
+         })(document, 'script');
+        </script>
+      <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+      </div>
+    
+      <div class="ds-thread" data-thread-key="2018/07/10/2018/android-design-mode/" data-title="《Android----android中用到的设计模式》" data-url="http://www.wxfjava.com/2018/07/10/2018/android-design-mode/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/head.png" alt="IT痴者">
+          <p class="site-author-name" itemprop="name">IT痴者</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">37</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/w695050167" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  CSDN
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://blog.csdn.net/w695050167/article/details/52396838" target="_blank" title="关于痴者">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  关于痴者
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">IT痴者</span>
+</div>
+
+<a class="theme-link" href="http://blog.csdn.net/w695050167">CSDN</a>
+<!--
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+-->
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span>访客</span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span>访问</span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"wxfjava"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

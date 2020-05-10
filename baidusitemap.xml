@@ -10,13 +10,13 @@
     <loc>http://www.wxfjava.com/2020/01/03/2020/android_studio_bug/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
-    <loc>http://www.wxfjava.com/2020/02/19/2020/qq_quad/</loc>
-    <lastmod>2020-05-09</lastmod>
-  </url>  <url>
     <loc>http://www.wxfjava.com/2020/04/14/2020/hot_fix/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
     <loc>http://www.wxfjava.com/2020/03/20/2020/mumu_bug/</loc>
+    <lastmod>2020-05-09</lastmod>
+  </url>  <url>
+    <loc>http://www.wxfjava.com/2020/02/19/2020/qq_quad/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
     <loc>http://www.wxfjava.com/2020/04/15/2020/uiautomator_uinotfound/</loc>
@@ -28,16 +28,22 @@
     <loc>http://www.wxfjava.com/2019/06/10/2019/property_boolean/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
-    <loc>http://www.wxfjava.com/2020/03/29/2020/android_ndk/</loc>
-    <lastmod>2020-05-09</lastmod>
-  </url>  <url>
     <loc>http://www.wxfjava.com/2019/01/11/2019/remount_system/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
     <loc>http://www.wxfjava.com/2019/08/26/2019/tcp_dump/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
+    <loc>http://www.wxfjava.com/2020/03/29/2020/android_ndk/</loc>
+    <lastmod>2020-05-09</lastmod>
+  </url>  <url>
     <loc>http://www.wxfjava.com/2018/11/01/2018/log_utils/</loc>
+    <lastmod>2020-05-09</lastmod>
+  </url>  <url>
+    <loc>http://www.wxfjava.com/2018/08/03/2018/optimize-handler/</loc>
+    <lastmod>2020-05-09</lastmod>
+  </url>  <url>
+    <loc>http://www.wxfjava.com/2018/10/11/2018/random_location/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
     <loc>http://www.wxfjava.com/2019/04/12/2019/adb_shell/</loc>
@@ -46,10 +52,10 @@
     <loc>http://www.wxfjava.com/2018/08/17/2018/thread_test/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
-    <loc>http://www.wxfjava.com/2018/08/03/2018/optimize-handler/</loc>
+    <loc>http://www.wxfjava.com/2018/06/26/2018/android-appt/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
-    <loc>http://www.wxfjava.com/2018/10/11/2018/random_location/</loc>
+    <loc>http://www.wxfjava.com/2018/07/10/2018/android-design-mode/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
     <loc>http://www.wxfjava.com/2018/02/07/2018/android-oat-source/</loc>
@@ -61,12 +67,6 @@
     <loc>http://www.wxfjava.com/2018/12/21/2018/leetcode/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
-    <loc>http://www.wxfjava.com/2018/06/26/2018/android-appt/</loc>
-    <lastmod>2020-05-09</lastmod>
-  </url>  <url>
-    <loc>http://www.wxfjava.com/2018/07/10/2018/android-design-mode/</loc>
-    <lastmod>2020-05-09</lastmod>
-  </url>  <url>
     <loc>http://www.wxfjava.com/2017/03/29/2017/maven-test-cmd/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
@@ -76,10 +76,10 @@
     <loc>http://www.wxfjava.com/2017/07/06/2017/python-yield-test/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
-    <loc>http://www.wxfjava.com/2017/07/05/2017/python_decorate/</loc>
+    <loc>http://www.wxfjava.com/2017/04/07/2017/regex-group/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
-    <loc>http://www.wxfjava.com/2017/04/07/2017/regex-group/</loc>
+    <loc>http://www.wxfjava.com/2017/07/05/2017/python_decorate/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
     <loc>http://www.wxfjava.com/2017/03/20/2017/android_smsdispatcher/</loc>
@@ -97,16 +97,16 @@
     <loc>http://www.wxfjava.com/2016/11/10/2016/adb_logcat/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
-    <loc>http://www.wxfjava.com/2016/09/01/2016/hello-world/</loc>
-    <lastmod>2020-05-09</lastmod>
-  </url>  <url>
     <loc>http://www.wxfjava.com/2016/09/02/2016/android_sdk2api_level/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
-    <loc>http://www.wxfjava.com/2017/04/18/2017/2017-study-plan/</loc>
+    <loc>http://www.wxfjava.com/2016/09/01/2016/hello-world/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
     <loc>http://www.wxfjava.com/2016/10/28/2016/as_import_android_source_idegen/</loc>
+    <lastmod>2020-05-09</lastmod>
+  </url>  <url>
+    <loc>http://www.wxfjava.com/2017/04/18/2017/2017-study-plan/</loc>
     <lastmod>2020-05-09</lastmod>
   </url>  <url>
     <loc>http://www.wxfjava.com/2016/09/01/2016/about_chizhe/</loc>
